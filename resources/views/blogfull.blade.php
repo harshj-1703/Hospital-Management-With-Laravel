@@ -373,7 +373,7 @@
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             Posted by 
-                            <a href="{{url('/')}}/doctor/profile/{{$blog->doctors->id}}" style="color:blue;">
+                            <a href="{{url('/')}}/doctor/profile/{{$blog->doctors->id}}" style="color:blue;" target="_blank">
                                 Dr. {{$blog->doctors->firstname." ".$blog->doctors->lastname}}
                             </a> on {{date('d M,Y',strtotime($blog->created_at))}}</span>
                         @endif
@@ -421,10 +421,9 @@
             </div>
         </div>
     </article>
-
     <hr>
 
-        <!-- Footer -->
+<!-- Footer -->
 <footer class="footer">
     
     <!-- Footer Top -->

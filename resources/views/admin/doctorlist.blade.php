@@ -18,7 +18,8 @@
         <link rel="stylesheet" href="{{url('/')}}/admin/assets/css/feathericon.min.css">
 		
 		<!-- Datatables CSS -->
-		<link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css">
+		{{-- <link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css"> --}}
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
 		
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{url('/')}}/admin/assets/css/style.css">
@@ -63,7 +64,7 @@
 							<div class="card">
 								<div class="card-body">
 									<div class="table-responsive">
-										<table class="datatable table table-hover table-center mb-0">
+										<table id="example" class="display" style="width:100%">
 											<thead>
 												<tr>
 													<th>Doctor Name</th>
@@ -78,12 +79,12 @@
                                                 @foreach($doctor as $doctor)
 												<tr>
 													<td>
-														<h2 class="table-avatar">
+														<h5 class="table-avatar">
 															<a href="{{url('/')}}/doctor-a/profile/{{$doctor->id}}" class="avatar avatar-sm mr-2">
                                                                 <img class="avatar-img rounded-circle" src="{{ asset('/storage').'/'.$doctor->profileimage}}" 
 																alt="" onerror=this.src="{{url('/')}}/assets/img/default.png"></a>
 															<a href="{{url('/')}}/doctor-a/profile/{{$doctor->id}}">Dr. {{$doctor->firstname." ".$doctor->lastname}}</a>
-														</h2>
+														</h5>
 													</td>
 													<td>{{$doctor->specialization}}</td>
 													
@@ -304,11 +305,42 @@
         <script src="{{url('/')}}/admin/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 		
 		<!-- Datatables JS -->
-		<script src="{{url('/')}}/admin/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-		<script src="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.js"></script>
+		{{-- <script src="{{url('/')}}/admin/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+		<script src="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.js"></script> --}}
+		<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 		
 		<!-- Custom JS -->
 		<script  src="{{url('/')}}/admin/assets/js/script.js"></script>
+
+		<script>
+			$(document).ready(function () {
+			$('#example').DataTable({
+				initComplete: function () {
+					this.api()
+						.columns()
+						.every(function () {
+							var column = this;
+							var select = $('<select><option value=""></option></select>')
+								.appendTo($(column.footer()).empty())
+								.on('change', function () {
+									var val = $.fn.dataTable.util.escapeRegex($(this).val());
+		
+									column.search(val ? '^' + val + '$' : '', true, false).draw();
+								});
+		
+							column
+								.data()
+								.unique()
+								.sort()
+								.each(function (d, j) {
+									select.append('<option value="' + d + '">' + d + '</option>');
+								});
+						});
+				},
+			});
+		});
+		</script>
 		
     </body>
 

@@ -198,23 +198,45 @@ class HomeController extends Controller
 
     public function deleteBlog($id)
     {
-        Blog::where('id','=',$id)->update(array(
-            'status' => '0'
-        ));
-
+        if(Blog::where('id','=',$id)->count() > 0)
+        {
+            Blog::where('id','=',$id)->update(array(
+                'status' => '0'
+            ));
+        }
         return redirect('blogs');
     }
 
     public function updateBlog($id)
     {
-        $blog = Blog::with('doctors')->with('admins')->where('id','=',$id)->first();
-        if((session('drid') == $blog->dr_id) || session('adminid') == $blog->admin_id)
+        if(Blog::where('id','=',$id)->count() > 0)
         {
-            return view('blogedit',compact('blog'));
+            $blog = Blog::with('doctors')->with('admins')->where('id','=',$id)->first();
+            if(session('drid') != null)
+            {
+                if(session('drid') == $blog->dr_id)
+                {
+                    return view('blogedit',compact('blog'));
+                }
+                else
+                {
+                    return redirect('blogs');
+                }
+            }else if(session('adminid') != null)
+            {
+                if(session('adminid') == $blog->admin_id)
+                {
+                    return view('blogedit',compact('blog'));
+                }
+            }
+            else
+            {
+                return redirect('blogs');
+            }
         }
         else
         {
-            return redirect()->back();
+            return redirect('blogs');
         }
     }
 
