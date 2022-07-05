@@ -21,7 +21,12 @@
 		<!-- Datatables CSS -->
 		{{-- <link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css"> --}}
 		<link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css">
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+		{{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"> --}}
+
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" /> --}}
+		{{-- <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet"> --}}
+		<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 		
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{url('/')}}/admin/assets/css/style.css">
@@ -57,19 +62,20 @@
 								<div class="card-body">
 									<div class="table-responsive">
 										{{-- <table class="datatable table table-hover table-center mb-0"> --}}
-											<table id="example" class="display" style="width:100%">
+											<table class="table table-bordered data-table" style="width: 100%">
 											<thead>
 												<tr>
 													<th>Invoice Number</th>
 													<th>Patient ID</th>
 													<th>Patient Name</th>
+													<th>Transection Date</th>
 													<th>Total Amount</th>
 													<th class="text-center">Razorpayid</th>
-													<th class="text-right">Actions</th>
+													{{-- <th class="text-right">Actions</th> --}}
 												</tr>
 											</thead>
 											<tbody>
-                                                @foreach($app as $a)
+                                                {{-- @foreach($app as $a)
 												<tr>
 													<td><a href="{{url('/')}}/admin/invoice/{{$a->id}}" target="_blank">#IN{{$a->id}}</td>
 													<td>#PT{{$a->patients->id}}</td>
@@ -82,9 +88,9 @@
 														</h5>
 													</td>
 													<td>${{$a->amountpaid}}</td>
-													<td class="text-center">
+													<td class="text-center"> --}}
 														{{-- <span class="badge badge-pill bg-success inv-badge">Paid</span> --}}
-                                                        {{$a->razorpayid}}
+                                                        {{-- {{$a->razorpayid}}
 													</td>
 													<td class="text-right">
 														<div class="actions">
@@ -94,7 +100,7 @@
 														</div>
 													</td>
 												</tr>
-                                                @endforeach
+                                                @endforeach --}}
 											</tbody>
 										</table>
 									</div>
@@ -105,25 +111,6 @@
 				</div>			
 			</div>
 			<!-- /Page Wrapper -->
-		
-        @foreach($app as $a2)
-		<!-- Delete Modal -->
-			<div class="modal fade" id="delete_modal{{$a2->id}}" aria-hidden="true" role="dialog">
-				<div class="modal-dialog modal-dialog-centered" role="document" >
-					<div class="modal-content">
-						<div class="modal-body">
-							<div class="form-content p-2">
-								<h4 class="modal-title">Delete</h4>
-								<p class="mb-4">Are you sure want to delete?</p>
-								<a href="{{url('/')}}/admin/delete/transection/{{$a2->id}}"><button type="button" class="btn btn-primary">Save </button></a>
-								<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Delete Modal -->
-        @endforeach
 		
         </div>
 		<!-- /Main Wrapper -->
@@ -137,17 +124,35 @@
 		
 		<!-- Slimscroll JS -->
         <script src="{{url('/')}}/admin/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-		
-		<!-- Datatables JS -->
-		{{-- <script src="{{url('/')}}/admin/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-		<script src="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.js"></script> --}}
-		<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-		<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+		<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		{{-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script> --}}
+		<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 
 		<!-- Custom JS -->
 		<script  src="{{url('/')}}/admin/assets/js/script.js"></script>
 
-		<script>
+		<script type="text/javascript">
+			$(function () {
+			  var table = $('.data-table').DataTable({
+				  processing: true,
+				  serverSide: true,
+				  ajax: "{{ \URL::to('admin/transections') }}",
+				  columns: [
+					{data: 'id', name: 'id'},
+					{data: 'patientid', name: 'patientid'},
+					{data: 'patientfirstname', name: 'patientfirstname'},
+					{data: 'created_at', name: 'created_at'},
+					{data: 'amountpaid', name: 'amountpaid'},
+					{data: 'razorpayid', name: 'razorpayid'},
+				  ]
+			  });
+			});
+		</script>
+
+		{{-- <script>
 			$(document).ready(function () {
 			$('#example').DataTable({
 				initComplete: function () {
@@ -174,7 +179,7 @@
 				},
 			});
 		});
-		</script>
+		</script> --}}
 		
     </body>
 

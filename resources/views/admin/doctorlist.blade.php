@@ -19,8 +19,13 @@
 		
 		<!-- Datatables CSS -->
 		{{-- <link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css"> --}}
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-		
+		{{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"> --}}
+
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" /> --}}
+		{{-- <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet"> --}}
+		<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+	
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{url('/')}}/admin/assets/css/style.css">
 		
@@ -64,18 +69,20 @@
 							<div class="card">
 								<div class="card-body">
 									<div class="table-responsive">
-										<table id="example" class="display" style="width:100%">
+										{{-- <div class="container"> --}}
+										{{-- <table id="example" class="display" style="width:100%"> --}}
+											<table class="table table-bordered data-table" style="width: 100%">
 											<thead>
 												<tr>
+													<th>Id</th>
 													<th>Doctor Name</th>
 													<th>Speciality</th>
 													<th>Member Since</th>
 													<th>Earned</th>
-													<th>Account Status</th>
-													
+													<th>Action</th>
 												</tr>
 											</thead>
-											<tbody>
+											{{-- <tbody>
                                                 @foreach($doctor as $doctor)
 												<tr>
 													<td>
@@ -91,8 +98,8 @@
 													<td>{{date("d M,Y",strtotime($doctor->created_at))}} <br>
                                                         <small>{{date("h:i A",strtotime($doctor->created_at))}}</small></td>
 													
-                                                    <?php $totalamount = App\Models\Appointment::where('dr_id','=',$doctor->id)
-                                                    ->where('status','=','1')->sum('amountpaid'); ?>
+                                                    <?php //$totalamount = App\Models\Appointment::where('dr_id','=',$doctor->id)
+                                                    //->where('status','=','1')->sum('amountpaid'); ?>
 													<td>${{$totalamount}}</td>
 													
 													<td>
@@ -110,8 +117,12 @@
 													</td>
 												</tr>
                                                 @endforeach
+											</tbody> --}}
+											<tbody>
+
 											</tbody>
 										</table>
+									{{-- </div> --}}
 									</div>
 								</div>
 							</div>
@@ -305,15 +316,37 @@
         <script src="{{url('/')}}/admin/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 		
 		<!-- Datatables JS -->
-		{{-- <script src="{{url('/')}}/admin/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-		<script src="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.js"></script> --}}
-		<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-		<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+		{{-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> --}}
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+		<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		{{-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script> --}}
+		<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+
+		<script type="text/javascript">
+			$(function () {
+			  var table = $('.data-table').DataTable({
+				  processing: true,
+				  serverSide: true,
+				  ajax: "{{ \URL::to('admin/doctorlist') }}",
+				  columns: [
+					  {data: 'id', name: 'id'},
+					  {data: 'drfirstname', name: 'drfirstname'},
+					  {data: 'specialization', name: 'specialization'},
+					  {data: 'created_at', name: 'created_at'},
+					  {data: 'amount', name: 'amount'},
+					  {data: 'action', name: 'action'},
+				  ]
+			  });
+			});
+		</script>
 		
 		<!-- Custom JS -->
 		<script  src="{{url('/')}}/admin/assets/js/script.js"></script>
 
-		<script>
+		{{-- <script>
 			$(document).ready(function () {
 			$('#example').DataTable({
 				initComplete: function () {
@@ -340,7 +373,7 @@
 				},
 			});
 		});
-		</script>
+		</script> --}}
 		
     </body>
 

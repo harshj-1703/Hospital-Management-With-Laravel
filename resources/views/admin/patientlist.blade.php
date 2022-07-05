@@ -20,8 +20,13 @@
 		
 		<!-- Datatables CSS -->
 		{{-- <link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css"> --}}
-		<link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css">
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+		{{-- <link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"> --}}
+
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+		{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" /> --}}
+		{{-- <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet"> --}}
+		<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 		
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{url('/')}}/admin/assets/css/style.css">
@@ -59,7 +64,7 @@
 									<div class="table-responsive">
 										<div class="table-responsive">
 										{{-- <table class="datatable table table-hover table-center mb-0"> --}}
-											<table id="example" class="display" style="width:100%">
+											<table class="table table-bordered data-table" style="width: 100%">
 											<thead>
 												<tr>
 													<th>Patient ID</th>
@@ -68,11 +73,12 @@
 													<th>Address</th>
 													<th>Phone</th>
 													<th>Last Visit</th>
-													<th class="text-right">Paid</th>
+													<th>Paid</th>
+													<th>Action</th>
 												</tr>
 											</thead>
 											<tbody>
-                                                @foreach($patient as $patient)
+                                                {{-- @foreach($patient as $patient)
 												<tr>
 													<td>#PT{{$patient->id}}</td>
 													<td>
@@ -84,26 +90,26 @@
 														</h5>
 													</td>
                                                     <?php
-                                                        $today = date("Y-m-d");
-                                                        $diff = date_diff(date_create($patient->dob), date_create($today));
+                                                        //$today = date("Y-m-d");
+                                                        //$diff = date_diff(date_create($patient->dob), date_create($today));
                                                     ?>
 													<td>{{$diff->format('%y');}}</td>
 													<td>{{$patient->address." , ".$patient->city." , ".$patient->state." , ".$patient->country}}</td>
 													<td>{{$patient->phoneno}}</td>
-													<?php $lastvisit = App\Models\Appointment::where('patient_id','=',$patient->id)->where('status','=','1')->orderby('id','DESC')->first(); ?>
+													<?php //$lastvisit = App\Models\Appointment::where('patient_id','=',$patient->id)->where('status','=','1')->orderby('id','DESC')->first(); ?>
                                                     @if($lastvisit != null)
 													<td>{{date("d M,Y",strtotime($lastvisit->created_at));}}</td>
                                                     @else
                                                     <td>Not Visited</td>
                                                     @endif
-                                                    <?php $totalamount = App\Models\Appointment::where('patient_id','=',$patient->id)->where('status','=','1')->sum('amountpaid'); ?>
+                                                    <?php //$totalamount = App\Models\Appointment::where('patient_id','=',$patient->id)->where('status','=','1')->sum('amountpaid'); ?>
                                                     @if($totalamount !=  null)
 													<td class="text">${{$totalamount}}</td>
                                                     @else
                                                     <td class="text">Not Visited</td>
                                                     @endif
 												</tr>
-                                                @endforeach
+                                                @endforeach --}}
 											</tbody>
 										</table>
 									</div>
@@ -131,15 +137,39 @@
         <script src="{{url('/')}}/admin/assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 		
 		<!-- Datatables JS -->
-		{{-- <script src="{{url('/')}}/admin/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-		<script src="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.js"></script> --}}
-		<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-		<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+		{{-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> --}}
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+		<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		{{-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script> --}}
+		<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+
+		<script type="text/javascript">
+			$(function () {
+			  var table = $('.data-table').DataTable({
+				  processing: true,
+				  serverSide: true,
+				  ajax: "{{ \URL::to('admin/patientlist') }}",
+				  columns: [
+					  {data: 'id', name: 'id'},
+					  {data: 'pfirstname', name: 'pfirstname'},
+					  {data: 'age', name: 'age'},
+					  {data: 'address', name: 'address'},
+					  {data: 'phoneno', name: 'phoneno'},
+					  {data: 'bookingdate', name: 'bookingdate'},
+					  {data: 'amount', name: 'amount'},
+					  {data: 'action', name: 'action'},
+				  ]
+			  });
+			});
+		</script>
 		
 		<!-- Custom JS -->
 		<script  src="{{url('/')}}/admin/assets/js/script.js"></script>
 
-		<script>
+		{{-- <script>
 			$(document).ready(function () {
 			$('#example').DataTable({
 				initComplete: function () {
@@ -166,7 +196,7 @@
 				},
 			});
 		});
-		</script>
+		</script> --}}
 		
     </body>
 
