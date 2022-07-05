@@ -10,6 +10,7 @@ use App\Models\Appointment;
 use App\Models\Notification;
 use App\Models\Admin;
 use App\Models\User;
+use DataTables;
 
 class AdminController extends Controller
 {
@@ -64,6 +65,20 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    public function patientstatus($id)
+    {
+        $dr = Patient::where('id','=',$id)->first();
+        if($dr->status == "1")
+        {
+            Patient::where('id','=',$id)->update(array('status' => '0'));
+        }
+        else
+        {
+            Patient::where('id','=',$id)->update(array('status' => '1'));
+        }
+        return redirect()->back();
+    }
+
     public function patients()
     {
         $patient = Patient::orderby('id','DESC')->get();
@@ -81,7 +96,15 @@ class AdminController extends Controller
 
     public function deletereview($id)
     {
-        Review::where('id','=',$id)->update(array('status' => '0'));
+        $r = Review::where('id','=',$id)->first();
+        if($r->status == 1)
+        {
+            Review::where('id','=',$id)->update(array('status' => '0'));
+        }
+        else
+        {
+            Review::where('id','=',$id)->update(array('status' => '1'));
+        }
         return redirect()->back();
     }
 
@@ -215,5 +238,288 @@ class AdminController extends Controller
     {
         Notification::truncate();
         return redirect()->back();
+    }
+
+    public function ajaxListDoctor(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = Doctor::with('appointments')->get();
+            return Datatables::of($data)
+                    // ->addIndexColumn()
+                    // ->addColumn('action', function($row){
+                    //        $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">View</a>';
+                    //         return $btn;
+                    // })
+                    // ->rawColumns(['action'])
+                    ->editColumn('created_at', function ($request) {
+                        return $request->created_at->format('d M,Y h:i A');
+                    })
+                    ->addColumn('drfirstname', function($data){
+                        $fn = '-';
+                        if($data->firstname)
+                        {
+                            $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                                    src="'.asset('/storage').'/'.$data->profileimage.
+                                    '" alt=""><a href="/doctor-a/profile/'.$data->id.'" target="_blank">&nbsp;
+                                    Dr. '.$data->firstname.' '.$data->lastname.'</a>';
+                        }
+                        return $fn;
+                    })
+                    ->addColumn('amount',function($request){
+                        return $request->appointments->sum('amountpaid');
+                    })
+                    ->addColumn('action',function($request){
+                        if($request->status == 1)
+                        {
+                            $btn = '<a href="/admin/doctorstatus/'.$request->id.'" 
+                                    class="edit btn btn-danger btn-sm">DISABLE</a>';
+                        }
+                        else
+                        {
+                            $btn = '<a href="/admin/doctorstatus/'.$request->id.'" 
+                                    class="edit btn btn-primary btn-sm">Enable</a>';
+                        }
+                        return $btn;
+                    })
+                    ->rawColumns(['action','drfirstname'])
+                    ->make(true);
+        }
+        $notification = Notification::with('doctors')->with('patients')->orderby('id','DESC')->get();
+        return view('admin.doctorlist',compact('notification'));
+    }
+
+    public function ajaxListpatient(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = patient::with('appointments','last_appointments')->get();
+            return Datatables::of($data)
+                    ->editColumn('age', function ($request) {
+                        $age = \Carbon\Carbon::parse($request->dob)->diff(\Carbon\Carbon::now())->y;
+                        return $age;
+                    })
+                    ->editColumn('pfirstname', function($data){
+                        if($data->firstname != null && $data->lastname != null)
+                        {
+                            $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                                src="'.asset('/storage').'/'.$data->profileimage.
+                                '" alt=""><a href="">&nbsp;
+                                '.$data->firstname.' '.$data->lastname.'</a>';
+                                return $fn;
+                        }
+                        else
+                        {
+                            return 'Not Defined';
+                        }
+                    })
+                    ->addColumn('bookingdate',function($data){
+                        $booking_date = '-';
+                        if($data->last_appointments){
+                            $booking_date = $data->last_appointments->bookingdate;
+                        }
+                        return date('d M,Y',strtotime($booking_date));
+                    })
+                    ->addColumn('amount',function($request){
+                        return $request->appointments->sum('amountpaid');
+                    })
+                    ->addColumn('action',function($request){
+                        if($request->status == 1)
+                        {
+                            $btn = '<a href="/admin/patientstatus/'.$request->id.'" 
+                                    class="edit btn btn-danger btn-sm">DISABLE</a>';
+                        }
+                        else
+                        {
+                            $btn = '<a href="/admin/patientstatus/'.$request->id.'" 
+                                    class="edit btn btn-primary btn-sm">Enable</a>';
+                        }
+                        return $btn;
+                    })
+                    ->rawColumns(['pfirstname','action'])
+                    ->make(true);
+        }
+        $notification = Notification::with('doctors')->with('patients')->orderby('id','DESC')->get();
+        return view('admin.patientlist',compact('notification'));
+    }
+
+    public function ajaxReviews(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = Review::with('doctors','patients')->get();
+            return Datatables::of($data)
+                    ->addColumn('patientfirstname', function($data){
+                        $fn= '-';
+                        if($data->patients)
+                        {
+                            $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                                src="'.asset('/storage').'/'.$data->patients->profileimage.
+                                '" alt=""><a href="">&nbsp;
+                                '.$data->patients->firstname.' '.$data->patients->lastname.'</a>';
+                                return $fn;
+                        }
+                        return $fn;
+                    })
+                    ->addColumn('drfirstname', function($data){
+                        $fn = '-';
+                        if($data->doctors){
+                            $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                                    src="'.asset('/storage').'/'.$data->doctors->profileimage.
+                                    '" alt=""><a href="/doctor-a/profile/'.$data->doctors->id.'" target="_blank">&nbsp;
+                                    Dr. '.$data->doctors->firstname.' '.$data->doctors->lastname.'</a>';
+                        }
+                        return $fn;
+                    })
+                    ->editColumn('star', function($data){
+                        if($data->star == 1)
+                        {
+                            $return = '<i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>';
+                        }
+                        else if($data->star == 2)
+                        {
+                            $return = '<i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>';
+                        }
+                        else if($data->star == 3)
+                        {
+                            $return = '<i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>';
+                        }
+                        else if($data->star == 4)
+                        {
+                            $return = '<i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star-o text-secondary"></i>';
+                        }
+                        else
+                        {
+                            $return = '<i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>
+                                       <i class="fe fe-star text-warning"></i>';
+                        }
+
+                        return $return;
+                    })
+                    ->editColumn('created_at', function($data){
+                        return date('d M,Y',strtotime($data->created_at));
+                    })
+                    ->addColumn('action', function($data){
+                       if($data->status == 1)
+                       {
+                            $btn = '<a href="/admin/deletereview/'.$data->id.'" 
+                                    class="edit btn btn-danger btn-sm">DELETE</a>';
+                       }
+                       else
+                       {
+                            $btn = '<a href="/admin/deletereview/'.$data->id.'" 
+                                    class="edit btn btn-primary btn-sm">UNDELETE</a>';
+                       }
+                       return $btn;
+                    })
+                    ->rawColumns(['patientfirstname','drfirstname','star','action'])
+                    ->make(true);
+        }
+        $notification = Notification::with('doctors')->with('patients')->orderby('id','DESC')->get();
+        return view('admin.reviews',compact('notification'));
+    }
+
+    public function ajaxTransections(Request $request)
+    {
+        if($request->ajax()) {
+            $data = Appointment::with('doctors','patients')->get();
+            return Datatables::of($data)
+                ->editColumn('id', function($data){
+                    return '<a href="/admin/invoice/'.$data->id.'" target="_blank">IN-'.$data->id.'</a>';
+                })
+                ->addColumn('patientid', function($data){
+                    return $data->patients->id;
+                })
+                ->addColumn('patientfirstname', function($data){
+                    $fn= '-';
+                    if($data->patients)
+                    {
+                        $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                            src="'.asset('/storage').'/'.$data->patients->profileimage.
+                            '" alt=""><a href="">&nbsp;
+                            '.$data->patients->firstname.' '.$data->patients->lastname.'</a>';
+                            return $fn;
+                    }
+                    return $fn;
+                })
+                ->editColumn('created_at', function($data){
+                    return date('d M,Y',strtotime($data->created_at));
+                })
+                ->rawColumns(['id','patientfirstname'])
+                ->make(true);
+        }
+        $notification = Notification::with('doctors')->with('patients')->orderby('id','DESC')->get();
+        return view('admin.transectionlist',compact('notification'));
+    }
+
+    public function ajaxAppointments(Request $request)
+    {
+        if($request->ajax()) {
+            $data = Appointment::with('doctors','patients')->get();
+            return Datatables::of($data)
+            ->addColumn('drfirstname', function($data){
+                $fn = '-';
+                if($data->doctors){
+                    $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                            src="'.asset('/storage').'/'.$data->doctors->profileimage.
+                            '" alt=""><a href="/doctor-a/profile/'.$data->doctors->id.'" target="_blank">&nbsp;
+                            Dr. '.$data->doctors->firstname.' '.$data->doctors->lastname.'</a>';
+                }
+                return $fn;
+            })
+            ->addColumn('patientfirstname', function($data){
+                $fn= '-';
+                if($data->patients)
+                {
+                    $fn = '<img class="avatar-img rounded-circle" style="object-fit: cover; width:40px;height:40px" 
+                        src="'.asset('/storage').'/'.$data->patients->profileimage.
+                        '" alt=""><a href="">&nbsp;
+                        '.$data->patients->firstname.' '.$data->patients->lastname.'</a>';
+                        return $fn;
+                }
+                return $fn;
+            })
+            ->editColumn('bookingtime', function($data){
+                return date('d M,Y',strtotime($data->bookingdate)).'-'.
+                       date('h:i A',strtotime($data->bookingtime));
+            })
+            ->editColumn('status', function($data){
+                if($data->status == 2)
+                {
+                    return '<label class="btn btn-warning btn-sm">Pending</label>';
+                }
+                else if($data->status == 1)
+                {
+                    return '<label class="btn btn-success btn-sm">Confirmed</label>';
+                }
+                else
+                {
+                    return '<label class="btn btn-danger btn-sm">Cancled</label>';
+                }
+            })
+            ->editColumn('amountpaid', function($data){
+                return '₹ '.$data->amountpaid;
+            })
+            ->rawColumns(['drfirstname','patientfirstname','status'])
+            ->make(true);
+        }
+        $notification = Notification::with('doctors')->with('patients')->orderby('id','DESC')->get();
+        return view('admin.appointmentlist',compact('notification'));
     }
 }

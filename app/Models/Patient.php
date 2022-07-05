@@ -14,6 +14,10 @@ class Patient extends Model
         return $this->hasMany('App\Models\Appointment','patient_id');
     }
 
+    public function last_appointments(){
+        return $this->hasOne('App\Models\Appointment','patient_id')->orderBy('id','DESC');
+    }
+
     public function favourites(){
         return $this->hasMany('App\Models\Favourite','patient_id');
     }

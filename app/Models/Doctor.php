@@ -56,7 +56,7 @@ class Doctor extends Model
     public function appointments(){
         return $this->hasMany('App\Models\Appointment','dr_id');
     }
-
+    
     public function favourites(){
         return $this->hasMany('App\Models\Favourite','dr_id');
     }
