@@ -21,7 +21,7 @@ class CreateAppointmentsTable extends Migration
             $table->foreign('patient_id')->references('id')->on('patients');
             $table->date('bookingdate');
             $table->time('bookingtime');
-            $table->time('bookingendtime');
+            $table->time('bookingendtime')->nullable();
             $table->string('razorpayid');
             // $table->string('billno',50);
             $table->Integer('amountpaid');

@@ -388,7 +388,7 @@
 						<form action="{{url('/')}}/doctor/addappointment" method="POST">
 							@csrf
 							<div class="row form-row">
-								<div class="col-12">
+								{{-- <div class="col-12">
 									<span class="text-danger">
 										@error('email')
 										  {{$message}}
@@ -409,7 +409,7 @@
 										<label>Password</label>
 										<input type="password" name="password" class="form-control" value="" minlength="8" maxlength="20">
 									</div>
-								</div>
+								</div> --}}
 								<div class="col-12 col-sm-6">
 									<span class="text-danger">
 										@error('firstname')
@@ -458,7 +458,7 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-12 col-sm-6">
+								{{-- <div class="col-12 col-sm-6">
 									<span class="text-danger">
 										@error('bookingendtime')
 										  {{$message}}
@@ -470,8 +470,8 @@
 											<input type="time" name="bookingendtime" class="form-control" value="{{old('bookingendtime')}}">
 										</div>
 									</div>
-								</div>
-								<div class="col-12 col-sm-6">
+								</div> --}}
+								<div class="col-12">
 									<span class="text-danger">
 										@error('purpose')
 										  {{$message}}

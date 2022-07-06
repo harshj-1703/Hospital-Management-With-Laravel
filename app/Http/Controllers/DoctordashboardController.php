@@ -181,85 +181,139 @@ class DoctordashboardController extends Controller
     {
         $request->validate(
             [
-                'email' => 'required|email',
-                'password' => 'required|min:8',
+                // 'email' => 'required|email',
+                // 'password' => 'required|min:8',
                 'firstname' => 'required|min:2',
                 'lastname' => 'required|min:2',
                 'purpose' => 'required|min:2',
                 'bookingdate' => 'required|date',
                 'bookingtime' => 'required',
-                'bookingendtime' => 'required',
+                // 'bookingendtime' => 'required',
             ]
         );
 
-        if(User::where('email','=',$request->email)->where('status','=','3')->count()>0)
-        {
-            $user = User::where('email','=',$request->email)->first();
-            if (\Hash::check($request->password, $user->password))
-            {
-                $patient = Patient::where('userid','=',$user->id)->first();
-                $doctor = Doctor::where('id','=',session('drid'))->first();
-                $app = new Appointment();
-                $app->dr_id = session('drid');
-                $app->patient_id = $patient->id;
-                $app->purpose = $request->purpose;
-                $app->bookingdate = $request->bookingdate;
-                $app->bookingtime = $request->bookingtime;
-                $app->bookingendtime = $request->bookingendtime;
-                $app->amountpaid = ($doctor->general_cons_price)+10;
-                $app->status = '1';
-                $app->paymentstatus = '0';
-                $app->save();
+        // if(User::where('email','=',$request->email)->where('status','=','3')->count()>0)
+        // {
+        //     $user = User::where('email','=',$request->email)->first();
+        //     if (\Hash::check($request->password, $user->password))
+        //     {
+        //         $patient = Patient::where('userid','=',$user->id)->first();
+        //         $doctor = Doctor::where('id','=',session('drid'))->first();
+        //         $app = new Appointment();
+        //         $app->dr_id = session('drid');
+        //         $app->patient_id = $patient->id;
+        //         $app->purpose = $request->purpose;
+        //         $app->bookingdate = $request->bookingdate;
+        //         $app->bookingtime = $request->bookingtime;
+        //         $app->bookingendtime = $request->bookingendtime;
+        //         $app->amountpaid = ($doctor->general_cons_price)+10;
+        //         $app->status = '1';
+        //         $app->paymentstatus = '0';
+        //         $app->save();
 
-                $nf = new Notification;
-                $nf->dr_id = session('drid');
-                $nf->patient_id = $patient->id;
-                $nf->paidamount = ($doctor->general_cons_price)+10;
-                $nf->save();
+        //         $nf = new Notification;
+        //         $nf->dr_id = session('drid');
+        //         $nf->patient_id = $patient->id;
+        //         $nf->paidamount = ($doctor->general_cons_price)+10;
+        //         $nf->save();
 
-                return redirect()->back()->with('message', 'Appointment Booked Successfully.');
-            }
-            else
-            {
-                return redirect()->back()->withInput($request->only('email'))->withErrors([
-                    'password' => 'Wrong password',
-                ]);
-            }
-        }
-        else if(User::where('email','=',$request->email)->where('status','!=','3')->count()>0)
+        //         return redirect()->back()->with('message', 'Appointment Booked Successfully.');
+        //     }
+        //     else
+        //     {
+        //         return redirect()->back()->withInput($request->only('email'))->withErrors([
+        //             'password' => 'Wrong password',
+        //         ]);
+        //     }
+        // }
+        // else if(User::where('email','=',$request->email)->where('status','!=','3')->count()>0)
+        // {
+        //     return redirect()->back()->withInput($request->only('email'))->withErrors([
+        //         'email' => 'This email registered with doctor or admin.',
+        //     ]);
+        // }
+        // else
+        // {
+        //     $doctor = Doctor::where('id','=',session('drid'))->first();
+        //     $pass = bcrypt($request['password']);
+
+        //     // $user = new User();
+        //     // $user->username = strtolower($request->firstname.$request->lastname.date('d-m-y'));
+        //     // $user->email = $request->email;
+        //     // $user->password = $pass;
+        //     // $user->status = '3';
+        //     // $user->save();
+
+        //     $patient = new Patient();
+        //     // $patient->userid = $user->id;
+        //     // $patient->username = strtolower($request->firstname.$request->lastname.date('d-m-y'));
+        //     $patient->firstname = $request->firstname;
+        //     $patient->lastname = $request->lastname;
+        //     // $patient->email = $request->email;
+        //     // $patient->password = $pass;
+        //     $patient->save();
+
+        //     $app = new Appointment();
+        //     $app->dr_id = session('drid');
+        //     $app->patient_id = $patient->id;
+        //     $app->purpose = $request->purpose;
+        //     $app->bookingdate = $request->bookingdate;
+        //     $app->bookingtime = $request->bookingtime;
+        //     // $app->bookingendtime = $request->bookingendtime;
+        //     $app->amountpaid = ($doctor->general_cons_price)+10;
+        //     $app->status = '1';
+        //     $app->paymentstatus = '0';
+        //     $app->save();
+
+        //     $nf = new Notification;
+        //     $nf->dr_id = session('drid');
+        //     $nf->patient_id = $patient->id;
+        //     $nf->paidamount = ($doctor->general_cons_price)+10;
+        //     $nf->save();
+
+        //     return redirect()->back()->with('message', 'New Patient Added, Appointment Booked Successfully.');
+        // }
+
+        if(patient::where('firstname','=',$request->firstname)->where('lastname','=',$request->lastname)->count() > 0)
         {
-            return redirect()->back()->withInput($request->only('email'))->withErrors([
-                'email' => 'This email registered with doctor or admin.',
-            ]);
-        }
-        else
-        {
+            $patient = Patient::where('firstname','=',$request->firstname)->where('lastname','=',$request->lastname)->first();
+
             $doctor = Doctor::where('id','=',session('drid'))->first();
-            $pass = bcrypt($request['password']);
-
-            $user = new User();
-            $user->username = strtolower($request->firstname.$request->lastname.date('d-m-y'));
-            $user->email = $request->email;
-            $user->password = $pass;
-            $user->status = '3';
-            $user->save();
-
-            $patient = new Patient();
-            $patient->userid = $user->id;
-            $patient->username = strtolower($request->firstname.$request->lastname.date('d-m-y'));
-            $patient->firstname = $request->firstname;
-            $patient->lastname = $request->lastname;
-            $patient->email = $request->email;
-            $patient->password = $pass;
-            $patient->save();
-
             $app = new Appointment();
             $app->dr_id = session('drid');
             $app->patient_id = $patient->id;
             $app->purpose = $request->purpose;
             $app->bookingdate = $request->bookingdate;
             $app->bookingtime = $request->bookingtime;
-            $app->bookingendtime = $request->bookingendtime;
+            // $app->bookingendtime = $request->bookingendtime;
+            $app->amountpaid = ($doctor->general_cons_price)+10;
+            $app->status = '1';
+            $app->paymentstatus = '0';
+            $app->save();
+
+            $nf = new Notification;
+            $nf->dr_id = session('drid');
+            $nf->patient_id = $patient->id;
+            $nf->paidamount = ($doctor->general_cons_price)+10;
+            $nf->save();
+
+            return redirect()->back()->with('message', 'Appointment Booked Successfully.');
+        }
+        else
+        {
+            $patient = new Patient();
+            $patient->firstname = $request->firstname;
+            $patient->lastname = $request->lastname;
+            $patient->save();
+
+            $doctor = Doctor::where('id','=',session('drid'))->first();
+            $app = new Appointment();
+            $app->dr_id = session('drid');
+            $app->patient_id = $patient->id;
+            $app->purpose = $request->purpose;
+            $app->bookingdate = $request->bookingdate;
+            $app->bookingtime = $request->bookingtime;
+            // $app->bookingendtime = $request->bookingendtime;
             $app->amountpaid = ($doctor->general_cons_price)+10;
             $app->status = '1';
             $app->paymentstatus = '0';
