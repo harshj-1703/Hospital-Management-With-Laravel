@@ -441,7 +441,8 @@
 									<div class="form-group">
 										<label>Appointment Date</label>
 										<div class="">
-											<input type="date" name="bookingdate" class="form-control" value="{{old('bookingdate')}}">
+											<input type="date" name="bookingdate" class="form-control" 
+											value="{{Carbon\Carbon::now()->format('Y-m-d')}}">
 										</div>
 									</div>
 								</div>
@@ -454,7 +455,8 @@
 									<div class="form-group">
 										<label>Appointment Time</label>
 										<div class="">
-											<input type="time" name="bookingtime" class="form-control" value="{{old('bookingtime')}}">
+											<input type="time" name="bookingtime" class="form-control"
+											 value="{{Carbon\Carbon::now()->format('H:i')}}">
 										</div>
 									</div>
 								</div>
