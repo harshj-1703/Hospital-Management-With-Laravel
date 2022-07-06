@@ -27,6 +27,7 @@ class CreateAppointmentsTable extends Migration
             $table->Integer('amountpaid');
             $table->enum('status',["1","2","0"])->default("2"); //1=> confirmed , 2=>pending , 3=>cancaled
             $table->enum('appointmentstatus',["1","0"])->default("0");
+            $table->enum('paymentstatus',["1","0"])->default("1");
             $table->timestamps();
         });
     }
