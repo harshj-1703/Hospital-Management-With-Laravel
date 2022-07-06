@@ -461,6 +461,16 @@ class AdminController extends Controller
                 ->editColumn('created_at', function($data){
                     return date('d M,Y',strtotime($data->created_at));
                 })
+                ->editColumn('razorpayid', function($data){
+                    if($data->razorpayid == null)
+                    {
+                        return 'Cash';
+                    }
+                    else
+                    {
+                        return $data->razorpayid;
+                    }
+                })
                 ->rawColumns(['id','patientfirstname'])
                 ->make(true);
         }
