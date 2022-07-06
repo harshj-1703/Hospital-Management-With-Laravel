@@ -1,3 +1,4 @@
+@include('patient.navbar')
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -7,8 +8,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>PAYMENT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> --}}
+    <style>
+        body{
+            background-color: rgb(187, 231, 231);
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -63,3 +69,24 @@
     </div>
 </body>
 </html>
+
+<!-- jQuery -->
+<script src="{{url('/')}}/assets/js/jquery.min.js"></script>
+		
+<!-- Bootstrap Core JS -->
+<script src="{{url('/')}}/assets/js/popper.min.js"></script>
+<script src="{{url('/')}}/assets/js/bootstrap.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="{{url('/')}}/assets/plugins/select2/js/select2.min.js"></script>
+
+<!-- Datetimepicker JS -->
+<script src="{{url('/')}}/assets/js/moment.min.js"></script>
+<script src="{{url('/')}}/assets/js/bootstrap-datetimepicker.min.js"></script>
+
+<!-- Sticky Sidebar JS -->
+<script src="{{url('/')}}/assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
+<script src="{{url('/')}}/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
+
+<!-- Custom JS -->
+<script src="{{url('/')}}/assets/js/script.js"></script>

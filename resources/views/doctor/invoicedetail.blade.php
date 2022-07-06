@@ -82,9 +82,15 @@
 										<div class="col-md-12">
 											<div class="invoice-info">
 												<strong class="customer-text">Payment Method</strong>
-												<p class="invoice-details invoice-details-two">
-													RazorPay <br>
-												</p>
+												@if($app->razorpayid != null)
+													<p class="invoice-details invoice-details-two">
+														RazorPay <br>
+													</p>
+												@else
+													<p class="invoice-details invoice-details-two">
+														Cash <br>
+													</p>
+												@endif
 											</div>
 										</div>
 									</div>

@@ -18,6 +18,12 @@
     <div class="dashboard-widget">
         <nav class="dashboard-menu">
             <ul>
+                <li>
+                    <a href="{{url('/')}}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
                 @if(Request::url() == 'http://127.0.0.1:8000/doctor/dashboard')
                 <li class="active">
                 @else

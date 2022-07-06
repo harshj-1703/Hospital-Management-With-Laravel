@@ -1,5 +1,7 @@
 <?php date_default_timezone_set("Asia/Calcutta");?>
-@if(session()->has('patientid'))
+@if(session()->has('drid'))
+@include('doctor.navbar')
+@elseif(session()->has('patientid'))
 @include('patient.navbar')
 @else
 @include('layout.navbar')
@@ -67,7 +69,7 @@
 						<div class="col-md-12 col-lg-4 col-xl-3 theiaStickySidebar">
 						
 							<!-- Search Filter -->
-							<form action="{{url('/')}}/patient/search" method="get" id="search-results">
+							<form action="{{url('/')}}/search" method="get" id="search-results">
 							<div class="card search-filter">
 								<div class="card-header">
 									<h4 class="card-title mb-0">Search Filter</h4>
@@ -106,7 +108,7 @@
 										</label>
 									</div>
 								</div>
-								<div><a href="{{url('/')}}/patient/search">
+								<div><a href="{{url('/')}}/search">
 									<input type="button" class="form-control btn-outline-info" value="RESET">
 								</a></div>
 								</div>

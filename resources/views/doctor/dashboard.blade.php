@@ -15,6 +15,15 @@
 <!-- Datatables CSS -->
 <link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css">
 
+<style>
+	#container1{
+	display: flex;                  
+	flex-direction: row;            
+	flex-wrap: nowrap;              
+	justify-content: space-between; 
+	}
+</style>
+
 <!-- Main CSS -->
 {{-- <link rel="stylesheet" href="{{url('/')}}/admin/assets/css/style.css"> --}}
 			<!-- Breadcrumb -->
@@ -52,6 +61,11 @@
 								<div class="col-md-12">
 									<div class="card dash-card">
 										<div class="card-body">
+											@if(session()->has('message'))
+											<div class="alert alert-success">
+											{{ session()->get('message') }}
+											</div>
+											@endif
 											<div class="row">
 												<div class="col-md-12 col-lg-4">
 													<div class="dash-widget dct-border-rht">
@@ -111,7 +125,18 @@
 							
 							<div class="row">
 								<div class="col-md-12">
-									<h4 class="mb-4">Patient Appoinment</h4>
+									<div id="container1">
+										<div>
+										<a class="mb-4" style="font-size: 20px;font-weight:500;line-height: 40px;">
+											Patient Appoinments</a>
+										</div>
+										<div>
+											<a href="#app_add" data-toggle="modal" class="btn btn-primary">
+												<i class="fas fa-plus"></i> Add Appointment
+											</a>
+										</div>
+									</div>
+									<br>
 									<div class="appointment-tab">
 									
 										<!-- Appointment Tab -->
@@ -122,6 +147,9 @@
 											<li class="nav-item">
 												<a class="nav-link" href="#today-appointments" data-toggle="tab">Today</a>
 											</li> 
+											<li class="nav-item">
+												<a class="nav-link" href="#payment-status" data-toggle="tab">Payment Status</a>
+											</li>
 										</ul>
 										<!-- /Appointment Tab -->
 										
@@ -272,6 +300,60 @@
 												</div>	
 											</div>
 											<!-- /Today Appointment Tab -->
+
+											<!-- Payment Status Tab -->
+											<div class="tab-pane" id="payment-status">
+												<div class="card">
+													<div class="card-body">
+														<div class="table-responsive">
+															<table class="datatable table table-hover table-center mb-0">
+																<thead>
+																	<tr>
+																		<th>Appt Id</th>
+																		<th>Appt Date</th>
+																		<th>Patient Name</th>
+																		<th class="text-center">Purpose</th>
+																		<th class="text-center">Amount</th>
+																		<th class="text-center">Amount Status</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	@foreach($pstatus as $app)
+																	<tr>
+																		<td>{{$app->id}}</td>
+																		<td>{{date("d M,Y",strtotime($app->bookingdate))}}<span class="d-block text-info">
+																			{{date("h:i a",strtotime($app->bookingtime))}}</span></td>
+																		<td>
+																			<h2 class="table-avatar">
+																				<a href="#" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle"
+																					onerror=this.src="{{url('/')}}/assets/img/default.png" src="{{ asset('/storage').'/'.$app->patients->profileimage}}" alt=""></a>
+																				<a href="#">{{$app->patients->firstname." ".$app->patients->lastname}} </a>
+																			</h2>
+																		</td>
+																		<td class="text-center">{{$app->purpose}}</td>
+																		<td class="text-center">${{$app->amountpaid}}</td>
+																		<td class="text-center" style="width: 100px;">
+																			<div class="table-action">
+																				@if($app->paymentstatus == "0")
+																				<a href="{{url('/')}}/doctor/dashboard/paymentconfirm/{{$app->id}}" class="btn btn-sm bg-danger-light">
+																					<i class="fas fa-check"></i> Not Done
+																				</a>
+																				@else
+																				<a href="{{url('/')}}/doctor/dashboard/paymentconfirm/{{$app->id}}" class="btn btn-sm bg-success-light">
+																					<i class="fas fa-check"></i> Done
+																				</a>
+																				@endif
+																			</div>
+																		</td>
+																	</tr>
+																	@endforeach
+																</tbody>
+															</table>		
+														</div>	
+													</div>	
+												</div>	
+											</div>
+											<!-- /Payment Status Tab -->
 											
 										</div>
 									</div>
@@ -291,6 +373,127 @@
 			<!-- /Footer -->
 		   
 		</div>
+
+		<!-- Appointment Add Modal -->
+		<div class="modal fade" id="app_add" aria-hidden="true" role="dialog">
+			<div class="modal-dialog modal-dialog-centered" role="document" >
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Personal Details</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form action="{{url('/')}}/doctor/addappointment" method="POST">
+							@csrf
+							<div class="row form-row">
+								<div class="col-12">
+									<span class="text-danger">
+										@error('email')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Email</label>
+										<input type="email" name="email" class="form-control" value="{{old('email')}}">
+									</div>
+								</div>
+								<div class="col-12">
+									<span class="text-danger">
+										@error('password')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Password</label>
+										<input type="password" name="password" class="form-control" value="" minlength="8" maxlength="20">
+									</div>
+								</div>
+								<div class="col-12 col-sm-6">
+									<span class="text-danger">
+										@error('firstname')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>First Name</label>
+										<input type="text" name="firstname" class="form-control" value="{{old('firstname')}}">
+									</div>
+								</div>
+								<div class="col-12 col-sm-6">
+									<span class="text-danger">
+										@error('lastname')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Last Name</label>
+										<input type="text" name="lastname" class="form-control" value="{{old('lastname')}}">
+									</div>
+								</div>
+								<div class="col-12 col-sm-6">
+									<span class="text-danger">
+										@error('bookingdate')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Appointment Date</label>
+										<div class="">
+											<input type="date" name="bookingdate" class="form-control" value="{{old('bookingdate')}}">
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6">
+									<span class="text-danger">
+										@error('bookingtime')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Appointment Time</label>
+										<div class="">
+											<input type="time" name="bookingtime" class="form-control" value="{{old('bookingtime')}}">
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6">
+									<span class="text-danger">
+										@error('bookingendtime')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Appointment Time</label>
+										<div class="">
+											<input type="time" name="bookingendtime" class="form-control" value="{{old('bookingendtime')}}">
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6">
+									<span class="text-danger">
+										@error('purpose')
+										  {{$message}}
+										@enderror
+									</span>
+									<div class="form-group">
+										<label>Purpose</label>
+										<div class="">
+											<input type="text" name="purpose" class="form-control" value="{{old('purpose')}}">
+										</div>
+									</div>
+								</div>
+								<input type="hidden" name="drid" value="{{session('drid')}}">
+							</div>
+							<button type="submit" class="btn btn-primary btn-block">Book Appointment</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Appointment Add Modal -->
+
 		<!-- /Main Wrapper -->
 	  
 		<!-- jQuery -->

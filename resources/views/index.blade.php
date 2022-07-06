@@ -1,5 +1,7 @@
 <?php date_default_timezone_set("Asia/Calcutta");?>
-@if(session()->has('patientid'))
+@if(session()->has('drid'))
+@include('doctor.navbar')
+@elseif(session()->has('patientid'))
 @include('patient.navbar')
 @else
 @include('layout.navbar')
@@ -18,7 +20,7 @@
                          
 						<!-- Search -->
 						<div class="search-box">
-							<form action="{{url('/')}}/patient/search" method="post">
+							<form action="{{url('/')}}/search" method="post">
 								@csrf
 								<div class="form-group search-location">
 									<input type="text" class="form-control" name="locationsearch" placeholder="Search Address,City,State">

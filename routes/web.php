@@ -47,10 +47,10 @@ Route::post('/blogs',[HomeController::class,'goToBlogPost']);
 Route::get('/blog/detail/{id}',[HomeController::class,'goToBlogFull']);
 Route::get('/doctor/profile/{id}',[HomeController::class,'godoctorprofile']);
 
-Route::post('/patient/search',[PatientSearchController::class,'searchIndex']);
+Route::post('/search',[PatientSearchController::class,'searchIndex']);
 Route::post('/patient/searchAjax',[PatientSearchController::class,'searchAjax']);
 
-Route::get('/patient/search',[PatientSearchController::class,'indexget']);
+Route::get('/search',[PatientSearchController::class,'indexget']);
 
 Route::get('/sendhtmlemail',[LoginController::class,'html_email']);
 //----------------
@@ -63,9 +63,10 @@ Route::post('/patientregistration',[PatientregistrationController::class,'patien
 
 //After Doctor Login
 Route::middleware(['DoctorGuard'])->group(function () {
-    Route::get('/doctor/dashboard',[DoctordashboardController::class,'index']);
     //doctors
+    Route::get('/doctor/dashboard',[DoctordashboardController::class,'index']);
     Route::get('/doctor/profilesetting',[DoctorprofileController::class,'profilesetting']);
+    Route::post('/doctor/addappointment',[DoctordashboardController::class,'addAppointment']);
     Route::get('/doctor/socialmedia',[DoctorprofileController::class,'socialmedia']);
     Route::get('/doctor/profilesetting/{id}',[DoctorprofileController::class,'deleteclinicimage']);
     Route::get('/doctor/changepassword',[DoctorprofileController::class,'changepassword']);
@@ -73,6 +74,7 @@ Route::middleware(['DoctorGuard'])->group(function () {
     Route::get('/doctor/dashboard/scheduleconfirm/{id}',[DoctordashboardController::class,'confirmschedule']);
     Route::get('/doctor/dashboard/schedulecancled/{id}',[DoctordashboardController::class,'cancleschedule']);
     Route::get('/doctor/dashboard/schedulereset/{id}',[DoctordashboardController::class,'resetschedule']);
+    Route::get('/doctor/dashboard/paymentconfirm/{id}',[DoctordashboardController::class,'paymentConfirm']);
     Route::get('/doctor/mypatients',[DoctordashboardController::class,'mypatients']);
     Route::get('/doctor/appointments',[DoctordashboardController::class,'appointments']);
     Route::get('/doctor/lastappointments',[DoctordashboardController::class,'lastappointments']);

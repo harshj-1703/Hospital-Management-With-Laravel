@@ -24,6 +24,24 @@
 	
 	<!-- Main CSS -->
 	<link rel="stylesheet" href="{{url('/')}}/assets/css/style.css">
+	<meta name="_token" content="{{csrf_token()}}" />
+		
+		<script>
+			function getSearchRecord(param1='', param2='', param3='', param4='', param5='', param6=''){
+				$('#search').empty();
+				$.ajax({
+					type: "POST",
+					url: "{{ \URL::to('patient/searchAjax') }}",
+					data:{param1:param1,param2:param2,param3:param3,param4:param4,param5:param5,param6:param6},
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+					},
+					success: function(html){
+						$("#search").append(html);
+					}
+				});
+			}
+		</script>
 	
 	</head>
 	<body>
@@ -56,9 +74,9 @@
 							</a>
 						</div>
                         <ul class="main-nav">
-							{{-- <li class="">
+							<li class="">
 								<a href="{{url('/')}}/">Home</a>
-							</li> --}}
+							</li>
 							<li class="has-submenu">
 								<a href="#">Doctors <i class="fas fa-chevron-down"></i></a>
 								<ul class="submenu">

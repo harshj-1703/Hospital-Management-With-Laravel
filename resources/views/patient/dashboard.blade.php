@@ -1,4 +1,6 @@
 @include('patient.navbar')
+<!-- Datatables CSS -->
+<link rel="stylesheet" href="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.css">
 <title>Patient Dashboard</title>
 			<!-- Breadcrumb -->
 			<div class="breadcrumb-bar">
@@ -54,10 +56,10 @@
 										
 										<!-- Appointment Tab -->
 										<div id="pat_appointments" class="tab-pane fade show active">
-											<div class="card card-table mb-0">
+											<div class="card">
 												<div class="card-body">
 													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
+														<table class="datatable table table-hover table-center mb-0">
 															<thead>
 																<tr>
 																	<th>Doctor</th>
@@ -115,10 +117,10 @@
 										
 										<!-- Prescription Tab -->
 										<div class="tab-pane fade" id="pat_prescriptions">
-											<div class="card card-table mb-0">
+											<div class="card">
 												<div class="card-body">
 													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
+														<table class="datatable table table-hover table-center mb-0">
 															<thead>
 																<tr>
 																	<th>Date </th>
@@ -182,10 +184,10 @@
 											
 										<!-- Medical Records Tab -->
 										<div id="pat_medical_records" class="tab-pane fade">
-											<div class="card card-table mb-0">
+											<div class="card">
 												<div class="card-body">
 													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
+														<table class="datatable table table-hover table-center mb-0">
 															<thead>
 																<tr>
 																	<th>ID</th>
@@ -255,10 +257,10 @@
 										
 										<!-- Billing Tab -->
 										<div id="pat_billing" class="tab-pane fade">
-											<div class="card card-table mb-0">
+											<div class="card">
 												<div class="card-body">
 													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
+														<table class="datatable table table-hover table-center mb-0">
 															<thead>
 																<tr>
 																	<th>Invoice No</th>
@@ -336,6 +338,13 @@
         <script src="{{url('/')}}/assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
         <script src="{{url('/')}}/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
 		
+		<!-- Datatables JS -->
+		<script src="{{url('/')}}/admin/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+		<script src="{{url('/')}}/admin/assets/plugins/datatables/datatables.min.js"></script>
+
+		<!-- Custom JS -->
+		<script  src="{{url('/')}}/admin/assets/js/script.js"></script>
+
 		<!-- Custom JS -->
 		<script src="{{url('/')}}/assets/js/script.js"></script>
 		
